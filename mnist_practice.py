@@ -34,33 +34,29 @@ y_train = tf.one_hot(y_train.astype(np.int32), depth = 10)
 y_test = tf.one_hot(y_test.astype(np.int32), depth = 10)
 
 #Show an example image from Mnist
-plt.imshow(x_train[random.randint(0, 59999)][:,:,0], cmap= "gray")
-plt.show()
+#plt.imshow(x_train[random.randint(0, 59999)][:,:,0], cmap= "gray")
+#plt.show()
 
-batch_size = 128
+batch_size = 64
 num_classes = 10
-epochs = 5
+epochs = 10
 
 #Build the Model
-model = tf.keras.models.Sequential(
-    [
-        tf.keras.layers.Conv2D(32, (5,5), padding = 'same', activation = 'relu', input_shape = input_shape),
-        tf.keras.layers.Conv2D(32, (3,3), padding = 'same', activation = 'relu', input_shape = input_shape),
-        tf.keras.layers.MaxPool2D(),
-        tf.keras.layers.Dropout(0.25),
-        tf.keras.layers.Conv2D(64, (3,3), padding = 'same', activation = 'relu', input_shape = input_shape),
-        tf.keras.layers.Conv2D(64, (3,3), padding = 'same', activation = 'relu', input_shape = input_shape),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(num_classes, activation = 'softmax')
-    ]
-)
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Conv2D(32, (3,3), activation='relu', input_shape=input_shape),
+    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dropout(0.3),
+    tf.keras.layers.Dense(num_classes, activation='softmax')
+])
 
 model.compile(optimizer = tf.keras.optimizers.RMSprop( epsilon = 1e-08),  loss ='categorical_crossentropy', metrics = ['acc'] )
 
 history = model.fit(x_train, y_train, batch_size = batch_size, epochs = epochs, validation_data = (x_test, y_test))
 
 #Plot out traing and validation accuracy and loss
-fig, ax = plt.subplot(2,1)
+fig, ax = plt.subplots(2,1)
 
 ax[0].plot(history.history['loss'], color = 'b', label = 'Training Loss')
 ax[0].plot(history.history['val_loss'], color = 'r', label = 'Validation Loss')
